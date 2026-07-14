@@ -1,4 +1,5 @@
-📸 SimilarityLens
+📸** SimilarityLens**
+
 SimilarityLens is a visual intelligence platform that compares images, GIFs, and text documents using multiple algorithms. It features both single-threaded and multi-threaded processing for optimal performance, plus real-time collaboration capabilities.
 
 ⚡ What It Does
@@ -61,33 +62,53 @@ Home Page
 <img width="1920" height="839" alt="image" src="https://github.com/user-attachments/assets/6f18c4b3-be1a-4ae9-8563-9b564d6cfeb2" />
 
 
+
+____
 Lab Page - Serial SSIM
 <img width="941" height="407" alt="image" src="https://github.com/user-attachments/assets/1e85d5a1-b3ca-4477-824c-9fa6923be6f5" />
 
 
+
+____
 Lab Page - Multi-Thread SSIM
 <img width="928" height="412" alt="image" src="https://github.com/user-attachments/assets/565e353b-ed02-4702-8c3b-17015036b8a5" />
 
 
+
+____
 Text Similarity
 <img width="925" height="404" alt="image" src="https://github.com/user-attachments/assets/0bbd8dc3-fa33-43b9-a36f-15c0649959c4" />
 
 
+
+____
 GIF Comparison
 <img width="578" height="419" alt="image" src="https://github.com/user-attachments/assets/9512fcd6-3a1c-4ef5-a3c7-319107f56044" />
 
 
+
+
+____
 Collaboration Feature
 <img width="328" height="41" alt="image" src="https://github.com/user-attachments/assets/2889746d-fbab-4138-90b7-58d99a34bff4" />
 
 
+
+____
+
 Blog page
 <img width="895" height="412" alt="image" src="https://github.com/user-attachments/assets/e9b2a746-fe03-41d6-9e9a-5174cbf5a742" />
 
+
+
+____
 Xampp
 <img width="572" height="78" alt="image" src="https://github.com/user-attachments/assets/dd3f81e4-9a89-4eb9-b097-e7bc0b1cbcc7" />
 
 
+
+
+____
 🛠️ Tech Stack
 Backend: Java 17, Spring Boot 2.7.0, Hibernate
 
