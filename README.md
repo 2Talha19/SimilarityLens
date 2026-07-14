@@ -1,4 +1,4 @@
-🎯 What is SimilarityLens?
+📸 SimilarityLens
 SimilarityLens is a visual intelligence platform that compares images, GIFs, and text documents using multiple algorithms. It features both single-threaded and multi-threaded processing for optimal performance, plus real-time collaboration capabilities.
 
 ⚡ What It Does
