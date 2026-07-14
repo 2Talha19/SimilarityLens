@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SimilarityLens - History</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Space Grotesk', monospace;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+        }
+        
+        /* Navbar */
+        nav {
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-logo {
+            font-size: 20px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #a78bfa, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            padding: 8px 15px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .nav-links a:hover,
+        .nav-links a.active {
+            background: linear-gradient(135deg, #a78bfa, #ec4899);
+        }
+        
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .stat-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: #a78bfa;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+        
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .controls input {
+            flex: 1;
+            background: rgba(0,0,0,0.7);
+            border: 1px solid #a78bfa;
+            padding: 10px 15px;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .controls input::placeholder {
+            color: rgba(255,255,255,0.5);
+        }
+        
+        button {
+            background: linear-gradient(135deg, #a78bfa, #ec4899);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            opacity: 0.8;
+            transform: scale(0.98);
+        }
+        
+        /* Tables */
+        .history-table {
+            background: rgba(0,0,0,0.5);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        .history-table h3 {
+            padding: 15px 20px;
+            background: rgba(0,0,0,0.3);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        th {
+            background: linear-gradient(135deg, #a78bfa, #ec4899);
+            font-weight: bold;
+        }
+        
+        tr:hover {
+            background: rgba(255,255,255,0.05);
+        }
+        
+        .similarity-high {
+            color: #4ade80;
+            font-weight: bold;
+        }
+        
+        .similarity-medium {
+            color: #facc15;
+            font-weight: bold;
+        }
+        
+        .similarity-low {
+            color: #f87171;
+            font-weight: bold;
+        }
+        
+        .refresh-btn {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #a78bfa;
+        }
+        
+        .empty {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            opacity: 0.6;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <div class="nav-logo">SimilarityLens</div>
+            <div class="nav-links">
+                <a href="home.html">Home</a>
+                <a href="lab.html">Lab</a>
+                <a href="history.html" class="active">History</a>
+            </div>
+        </nav>
+        
+        <h1>📊 Comparison History</h1>
+        
+        <!-- Stats Cards -->
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-value" id="totalFiles">-</div>
+                <div class="stat-label">Total Files Shared</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalComparisons">-</div>
+                <div class="stat-label">Total Comparisons</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="avgSimilarity">-</div>
+                <div class="stat-label">Average Similarity</div>
+            </div>
+        </div>
+        
+        <!-- Controls -->
+        <div class="controls">
+            <input type="text" id="roomIdInput" placeholder="Enter Room ID to filter...">
+            <button onclick="loadRoomHistory()">Search by Room</button>
+            <button onclick="loadAllHistory()">Show All</button>
+            <button onclick="refreshData()" class="refresh-btn">🔄 Refresh</button>
+        </div>
+        
+        <!-- Comparisons Table -->
+        <div class="history-table">
+            <h3>📋 Comparison Records</h3>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date & Time</th>
+                            <th>Room ID</th>
+                            <th>Algorithm</th>
+                            <th>Left File</th>
+                            <th>Right File</th>
+                            <th>Similarity</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTableBody">
+                        <tr class="loading"><td colspan="6">Loading data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Shared Files Table -->
+        <div class="history-table">
+            <h3>📁 Shared Files History</h3>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date & Time</th>
+                            <th>Room ID</th>
+                            <th>Side</th>
+                            <th>Filename</th>
+                            <th>Type</th>
+                            <th>Size</th>
+                        </tr>
+                    </thead>
+                    <tbody id="filesTableBody">
+                        <tr class="loading"><td colspan="6">Loading data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <footer>Ahmed Salman | Adil Munir | Muhammad Talha</footer>
+    </div>
+    
+    <script>
+        // Load statistics
+        async function loadStats() {
+            try {
+                const response = await fetch('/history/stats');
+                const stats = await response.json();
+                document.getElementById('totalFiles').innerText = stats.totalFiles || 0;
+                document.getElementById('totalComparisons').innerText = stats.totalComparisons || 0;
+                
+                // Calculate average similarity if there are comparisons
+                if (stats.totalComparisons > 0) {
+                    const avgResponse = await fetch('/history/average');
+                    if (avgResponse.ok) {
+                        const avg = await avgResponse.json();
+                        document.getElementById('avgSimilarity').innerText = avg.average ? avg.average.toFixed(1) + '%' : '-';
+                    } else {
+                        document.getElementById('avgSimilarity').innerText = '-';
+                    }
+                } else {
+                    document.getElementById('avgSimilarity').innerText = '-';
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+                document.getElementById('totalFiles').innerText = 'Error';
+                document.getElementById('totalComparisons').innerText = 'Error';
+            }
+        }
+        
+        // Load all history
+        async function loadAllHistory() {
+            try {
+                const response = await fetch('/history/recent');
+                const history = await response.json();
+                displayHistory(history);
+            } catch (error) {
+                console.error('Error loading history:', error);
+                document.getElementById('historyTableBody').innerHTML = '<tr class="empty"><td colspan="6">Error loading data. Make sure backend is running.</td></tr>';
+            }
+            
+            // Also load files
+            try {
+                const response = await fetch('/history/files');
+                if (response.ok) {
+                    const files = await response.json();
+                    displayFiles(files);
+                }
+            } catch (error) {
+                console.error('Error loading files:', error);
+            }
+        }
+        
+        // Load room-specific history
+        async function loadRoomHistory() {
+            const roomId = document.getElementById('roomIdInput').value.trim();
+            if (!roomId) {
+                alert('Please enter a Room ID');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/history/room/' + roomId);
+                const data = await response.json();
+                displayHistory(data.comparisons || []);
+                displayFiles(data.files ? Object.values(data.files) : []);
+            } catch (error) {
+                console.error('Error loading room history:', error);
+                document.getElementById('historyTableBody').innerHTML = '<tr class="empty"><td colspan="6">Error loading data</td></tr>';
+            }
+        }
+        
+        // Display comparison history
+        function displayHistory(history) {
+            const tbody = document.getElementById('historyTableBody');
+            
+            if (!history || history.length === 0) {
+                tbody.innerHTML = '<tr class="empty"><td colspan="6">No comparison history found</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = history.map(h => {
+                const percent = h.similarityPercent || 0;
+                let colorClass = '';
+                if (percent >= 80) colorClass = 'similarity-high';
+                else if (percent >= 50) colorClass = 'similarity-medium';
+                else colorClass = 'similarity-low';
+                
+                const date = new Date(h.comparisonDate).toLocaleString();
+                
+                return `<tr>
+                    <td>${date}</td>
+                    <td>${h.roomId || '-'}</td>
+                    <td>${h.algorithm || '-'}</td>
+                    <td>${h.leftFilename || '-'}</td>
+                    <td>${h.rightFilename || '-'}</td>
+                    <td class="${colorClass}">${percent.toFixed(2)}%</td>
+                </tr>`;
+            }).join('');
+        }
+        
+        // Display shared files
+        function displayFiles(files) {
+            const tbody = document.getElementById('filesTableBody');
+            
+            if (!files || files.length === 0) {
+                tbody.innerHTML = '<tr class="empty"><td colspan="6">No files found</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = files.map(f => {
+                const date = new Date(f.sharedAt).toLocaleString();
+                const size = f.fileSize ? (f.fileSize / 1024).toFixed(1) + ' KB' : '-';
+                
+                return `<tr>
+                    <td>${date}</td>
+                    <td>${f.roomId || '-'}</td>
+                    <td>${f.side || '-'}</td>
+                    <td>${f.filename || '-'}</td>
+                    <td>${f.fileType || '-'}</td>
+                    <td>${size}</td>
+                </tr>`;
+            }).join('');
+        }
+        
+        // Refresh all data
+        async function refreshData() {
+            await loadStats();
+            await loadAllHistory();
+        }
+        
+        // Initial load
+        loadStats();
+        loadAllHistory();
+        
+        // Auto-refresh every 30 seconds
+        setInterval(refreshData, 30000);
+    </script>
+</body>
+</html>

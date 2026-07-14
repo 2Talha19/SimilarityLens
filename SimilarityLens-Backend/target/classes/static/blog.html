@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SimilarityLens · How It Works</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #050816;
+            color: white;
+            line-height: 1.7;
+        }
+
+        /* ========== UNIFIED NAVBAR ========== */
+        #navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 60px;
+            z-index: 100;
+            background: rgba(4, 4, 10, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .nav-logo {
+            font-family: 'Bebas Neue', sans-serif;
+            position: absolute;
+            left: 60px;
+            font-size: 24px;
+            letter-spacing: 0.1em;
+            background: linear-gradient(to right, #fff, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 10px 30px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+        }
+
+        .nav-item {
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            transition: color 0.3s, transform 0.3s;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            color: #fff;
+        }
+
+        /* ========== BLOG STYLES ========== */
+        .hero {
+            padding: 140px 10% 60px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 4rem;
+            margin-bottom: 20px;
+            background: linear-gradient(160deg, #fff 0%, #c8b8ff 45%, #ff9de2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            max-width: 700px;
+            margin: 0 auto;
+            opacity: 0.8;
+            font-size: 1.1rem;
+        }
+
+        .section {
+            padding: 40px 10% 80px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(167, 139, 250, 0.4);
+        }
+
+        .card h2 {
+            margin-bottom: 15px;
+            color: #a78bfa;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.8rem;
+            letter-spacing: 0.02em;
+        }
+
+        .card p {
+            opacity: 0.85;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px;
+            opacity: 0.5;
+            font-size: 0.8rem;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        @media (max-width: 760px) {
+            #navbar { padding: 15px 20px; }
+            .nav-logo { font-size: 18px; left: 20px; }
+            .nav-links { gap: 20px; padding: 8px 20px; }
+            .hero h1 { font-size: 2.5rem; }
+            .hero { padding: 120px 5% 40px; }
+            .section { padding: 20px 5% 60px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav id="navbar">
+        <div class="nav-logo">SimilarityLens</div>
+        <div class="nav-links">
+            <a href="home.html" class="nav-item">Home</a>
+            <a href="lab.html" class="nav-item">Lab</a>
+            <a href="blog.html" class="nav-item active">Blog</a>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <h1>How SimilarityLens Works</h1>
+        <p>We combine multiple image analysis algorithms to deliver accurate similarity comparisons.</p>
+    </div>
+
+    <div class="section">
+        <div class="card">
+            <h2>SSIM Algorithm</h2>
+            <p>Structural Similarity Index compares brightness, contrast, and structure between two images. It mimics how humans visually perceive similarity, making it more accurate than pixel-by-pixel comparison.</p>
+        </div>
+
+        <div class="card">
+            <h2>Multi-Thread Processing</h2>
+            <p>Parallel chunk-based processing splits images into multiple sections and compares them simultaneously using separate execution threads for faster performance. Perfect for high-resolution images.</p>
+        </div>
+
+        <div class="card">
+            <h2>Perceptual Hashing</h2>
+            <p>Perceptual hashing generates compact fingerprints of images so visually similar images produce similar hash values. This is ideal for detecting duplicates and near-duplicates.</p>
+        </div>
+
+        <div class="card">
+            <h2>Edge Detection</h2>
+            <p>Sobel edge operators analyze image gradients and structural boundaries to compare object shapes and contours. This provides a structural perspective independent of color.</p>
+        </div>
+    </div>
+
+    <footer>SimilarityLens · Advanced Visual Intelligence</footer>
+
+    <script>
+        // Active nav link
+        document.querySelectorAll('.nav-item').forEach(link => {
+            const href = link.getAttribute('href');
+            if (href === window.location.pathname.split('/').pop() || 
+                (window.location.pathname.endsWith('/') && href === 'blog.html')) {
+                link.classList.add('active');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SimilarityLens · Visual Intelligence</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style1.css">
+</head>
+<body>
+
+    <!-- Unified Navbar (appears on all pages) -->
+    <nav id="navbar">
+        <div class="nav-logo">SimilarityLens</div>
+        <div class="nav-links">
+            <a href="home.html" class="nav-item">Home</a>
+            <a href="lab.html" class="nav-item">Lab</a>
+            <a href="blog.html" class="nav-item">Blog</a>
+        </div>
+    </nav>
+
+    <!-- Custom Cursor Elements -->
+    <div id="cursor"></div>
+    <div id="cursor-ring"></div>
+
+    <!-- Background Canvas -->
+    <canvas id="bgCanvas"></canvas>
+    
+    <!-- Visual Effects -->
+    <div id="vignette"></div>
+    <div id="scanlines"></div>
+
+    <!-- Ambient Orbs -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <!-- 3D Scene Container -->
+    <div id="scene"></div>
+
+    <!-- Hero Section -->
+    <div id="hero">
+        <div class="eyebrow">Visual Intelligence </div>
+        <h1>SIMILARITY<br>LENS</h1>
+        <p class="sub">Compare images using SSIM, perceptual hashing, edge detection & multi-thread analysis.</p>
+        <div class="cta-row">
+            <a href="lab.html">
+                <button class="btn-primary">Start Comparing</button>
+            </a>
+            <a href="blog.html">
+                <button class="btn-ghost">See How It Works</button>
+            </a>
+        </div>
+    </div>
+
+    <!-- Stats Strip -->
+    <div id="strip">
+        <div class="strip-stat">
+            <div class="stat-num">89.2%</div>
+            <div class="stat-label">Accuracy Rate</div>
+        </div>
+        <div class="strip-logo">SimilarityLens © 2026</div>
+        <div class="strip-stat" style="text-align:right">
+            <div class="stat-num">20+</div>
+            <div class="stat-label">Comparisons Made</div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

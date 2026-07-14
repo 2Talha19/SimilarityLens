@@ -1,0 +1,374 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ========== UNIFIED NAVBAR ========== */
+#navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 60px;
+    z-index: 100;
+    pointer-events: all;
+    background: rgba(4, 4, 10, 0.7);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    position: absolute;
+    left: 60px;
+    font-size: 24px;
+    letter-spacing: 0.1em;
+    background: linear-gradient(to right, #fff, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.nav-links {
+    display: flex;
+    gap: 40px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 10px 30px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+}
+
+.nav-item {
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    transition: color 0.3s, transform 0.3s;
+}
+
+.nav-item:hover, .nav-item.active {
+    color: #fff;
+}
+
+/* ========== BASE STYLES ========== */
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    cursor: none;
+}
+
+body {
+    background: #04040a;
+    font-family: 'Outfit', sans-serif;
+    color: #fff;
+}
+
+/* ========== CUSTOM CURSOR ========== */
+#cursor {
+    position: fixed;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #fff;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s, width 0.3s, height 0.3s, background 0.3s;
+    mix-blend-mode: difference;
+}
+
+#cursor-ring {
+    position: fixed;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.18s ease, width 0.3s, height 0.3s, opacity 0.3s;
+}
+
+/* ========== BACKGROUND CANVAS ========== */
+#bgCanvas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+}
+
+/* ========== 3D SCENE ========== */
+#scene {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    perspective: 900px;
+    perspective-origin: 50% 50%;
+}
+
+.card {
+    position: absolute;
+    border-radius: 16px;
+    overflow: hidden;
+    transform-style: preserve-3d;
+    will-change: transform;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7);
+    cursor: none;
+    transition: box-shadow 0.4s;
+}
+
+.card:hover {
+    box-shadow: 0 40px 120px rgba(255, 255, 255, 0.15), 0 0 60px rgba(180, 140, 255, 0.3);
+}
+
+.card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: saturate(0.8) brightness(0.9);
+    transition: filter 0.4s;
+}
+
+.card:hover img {
+    filter: saturate(1.1) brightness(1.05);
+}
+
+.card-gloss {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, transparent 60%);
+    border-radius: 16px;
+    pointer-events: none;
+}
+
+/* ========== HERO SECTION ========== */
+#hero {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    pointer-events: none;
+}
+
+.eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.45);
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 0.9s 0.2s forwards;
+}
+
+h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(80px, 13vw, 180px);
+    line-height: 0.9;
+    letter-spacing: 0.03em;
+    background: linear-gradient(160deg, #fff 0%, #c8b8ff 45%, #ff9de2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    opacity: 0;
+    animation: fadeUp 1s 0.45s forwards;
+    user-select: none;
+}
+
+.sub {
+    font-size: clamp(14px, 1.8vw, 18px);
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.5);
+    max-width: 480px;
+    line-height: 1.7;
+    margin-top: 28px;
+    opacity: 0;
+    animation: fadeUp 1s 0.7s forwards;
+}
+
+.cta-row {
+    display: flex;
+    gap: 16px;
+    margin-top: 44px;
+    pointer-events: all;
+    opacity: 0;
+    animation: fadeUp 1s 0.95s forwards;
+}
+
+.btn-primary {
+    padding: 15px 38px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #a78bfa, #ec4899);
+    color: #fff;
+    font-family: 'Outfit', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    cursor: none;
+    letter-spacing: 0.04em;
+    box-shadow: 0 8px 40px rgba(167, 139, 250, 0.5);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-primary:hover {
+    transform: scale(1.06);
+    box-shadow: 0 14px 60px rgba(167, 139, 250, 0.7);
+}
+
+.btn-ghost {
+    padding: 15px 38px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.8);
+    font-family: 'Outfit', sans-serif;
+    font-size: 15px;
+    cursor: none;
+    letter-spacing: 0.04em;
+    transition: background 0.2s, border-color 0.2s;
+    backdrop-filter: blur(10px);
+}
+
+.btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* ========== STATS STRIP ========== */
+#strip {
+    position: fixed;
+    bottom: 36px;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 0 48px;
+    pointer-events: none;
+    opacity: 0;
+    animation: fadeUp 1s 1.2s forwards;
+}
+
+.strip-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    color: #fff;
+    letter-spacing: 0.05em;
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.35);
+}
+
+.strip-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 14px;
+    letter-spacing: 0.3em;
+    color: rgba(255, 255, 255, 0.2);
+    text-transform: uppercase;
+}
+
+/* ========== VISUAL EFFECTS ========== */
+#vignette {
+    position: fixed;
+    inset: 0;
+    z-index: 5;
+    background: radial-gradient(ellipse 70% 70% at 50% 50%, transparent 30%, rgba(4, 4, 10, 0.85) 100%);
+    pointer-events: none;
+}
+
+#scanlines {
+    position: fixed;
+    inset: 0;
+    z-index: 6;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.03) 2px, rgba(0, 0, 0, 0.03) 4px);
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+/* ========== ANIMATIONS ========== */
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========== AMBIENT ORBS ========== */
+.orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: 0;
+    animation: orbDrift linear infinite;
+}
+
+.orb-1 {
+    width: 600px;
+    height: 600px;
+    left: -100px;
+    top: -100px;
+    background: rgba(120, 80, 255, 0.18);
+    animation-duration: 18s;
+}
+
+.orb-2 {
+    width: 500px;
+    height: 500px;
+    right: -80px;
+    top: 200px;
+    background: rgba(236, 72, 153, 0.14);
+    animation-duration: 22s;
+    animation-delay: -7s;
+}
+
+.orb-3 {
+    width: 400px;
+    height: 400px;
+    left: 30%;
+    bottom: -100px;
+    background: rgba(56, 189, 248, 0.1);
+    animation-duration: 26s;
+    animation-delay: -13s;
+}
+
+@keyframes orbDrift {
+    0% {
+        transform: translate(0, 0) scale(1);
+    }
+    33% {
+        transform: translate(40px, -60px) scale(1.1);
+    }
+    66% {
+        transform: translate(-30px, 40px) scale(0.95);
+    }
+    100% {
+        transform: translate(0, 0) scale(1);
+    }
+}

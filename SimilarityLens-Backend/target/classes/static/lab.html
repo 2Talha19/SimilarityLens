@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>SimilarityLens · Algorithm Lab</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- Collaboration Status Bar - Top Right -->
+<div style="position: fixed; top: 15px; right: 15px; z-index: 10000; display: flex; gap: 10px; align-items: center; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); padding: 8px 16px; border-radius: 50px; border: 1px solid rgba(167, 139, 250, 0.5); font-family: monospace; font-size: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+    <span id="partnerStatusDot" style="width: 10px; height: 10px; border-radius: 50%; display: inline-block; background-color: #f87171; box-shadow: 0 0 5px #f87171;"></span>
+    <span id="partnerStatusText" style="color: #fff;">No Partner</span>
+    <div style="width: 1px; height: 20px; background: rgba(255,255,255,0.2);"></div>
+    <button id="collabShareBtn" style="background: linear-gradient(135deg, #a78bfa, #8b5cf6); border: none; padding: 4px 12px; border-radius: 20px; color: white; cursor: pointer; font-size: 11px; font-weight: bold;">📤 Share</button>
+    <button id="collabCompareBtn" style="background: linear-gradient(135deg, #ec4899, #db2777); border: none; padding: 4px 12px; border-radius: 20px; color: white; cursor: pointer; font-size: 11px; font-weight: bold;">🔍 Compare</button>
+</div>
+
+<!-- Status message at bottom -->
+<div id="collabToast" style="position: fixed; bottom: 20px; right: 20px; z-index: 10000; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); padding: 8px 16px; border-radius: 12px; font-size: 12px; color: #a78bfa; border-left: 3px solid #a78bfa; font-family: monospace; transition: all 0.3s; opacity: 0; pointer-events: none;">Ready</div>
+
+<!-- Unified Navbar -->
+<nav id="navbar">
+    <div class="nav-logo">SimilarityLens</div>
+    <div class="nav-links">
+        <a href="home.html" class="nav-item">Home</a>
+        <a href="lab.html" class="nav-item active">Lab</a>
+        <a href="blog.html" class="nav-item">Blog</a>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="hero">
+        <h1>◈ VISUAL ALGORITHM TESTS</h1>
+        <div class="tagline">single-thread simulation · multi-thread simulation · SSIM core</div>
+    </div>
+
+    <div class="tabs-lab">
+        <button class="tab-trigger active" data-panel="panelSerial">🧵 SERIAL THREAD</button>
+        <button class="tab-trigger" data-panel="panelMulti">⚡ MULTI‑THREAD SSIM</button>
+        <button class="tab-trigger" data-panel="panelHybrid">🔍 TEXT SIMILARITY</button>
+        <button class="tab-trigger" data-panel="panelEdge">🌿 GIF SERIAL</button>
+        <button class="tab-trigger" data-panel="panelGifParallel">⚡ GIF PARALLEL</button>
+    </div>
+
+    <!-- Panel Serial - IMAGES ONLY -->
+    <div id="panelSerial" class="algorithm-panel active-panel">
+        <div class="image-comparison-grid">
+            <div class="vision-card">
+                <div class="card-title">📸 IMAGE A · reference (JPG/PNG only)</div>
+                <div id="previewSerialA" class="image-preview"><div class="empty-state">awaiting image</div></div>
+                <input type="file" id="fileSerialA" class="file-upload" accept="image/jpeg,image/png,image/jpg" data-panel="serial" data-side="a">
+            </div>
+            <div class="vision-card">
+                <div class="card-title">🖼️ IMAGE B · test (JPG/PNG only)</div>
+                <div id="previewSerialB" class="image-preview"><div class="empty-state">awaiting image</div></div>
+                <input type="file" id="fileSerialB" class="file-upload" accept="image/jpeg,image/png,image/jpg" data-panel="serial" data-side="b">
+            </div>
+        </div>
+        <div class="insight-area">
+            <div class="metrics-flex">
+                <div class="metric-tile"><div class="label">SSIM (SERIAL)</div><div class="value" id="serialSsimVal">—</div></div>
+                <div class="metric-tile"><div class="label">SIMILARITY %</div><div class="value" id="serialPercent">—</div></div>
+                <div class="metric-tile"><div class="label">TIME (ms)</div><div class="value" id="serialTime">—</div></div>
+            </div>
+            <div class="animated-viz">
+                <div class="progress-bar-container"><div class="progress-fill" id="serialProgressFill" style="transition: width 0.5s ease;"></div></div>
+                <div class="thread-visualizer"><div class="thread-chip">🧠 sequential pipeline · 1 core</div><div class="thread-chip">pixel‑by‑pixel structural comparison</div></div>
+                <div class="status-chip" id="serialStatusMsg">✨ ready — upload two images & execute serial SSIM</div>
+            </div>
+            <button class="action-btn" data-mode="serial">▶ RUN SERIAL SSIM ALGORITHM</button>
+        </div>
+    </div>
+
+    <!-- Panel Multi - IMAGES ONLY -->
+    <div id="panelMulti" class="algorithm-panel">
+        <div class="image-comparison-grid">
+            <div class="vision-card">
+                <div class="card-title">📸 IMAGE A (JPG/PNG only)</div>
+                <div id="previewMultiA" class="image-preview"><div class="empty-state">no file</div></div>
+                <input type="file" id="fileMultiA" class="file-upload" accept="image/jpeg,image/png,image/jpg" data-panel="multi" data-side="a">
+            </div>
+            <div class="vision-card">
+                <div class="card-title">📸 IMAGE B (JPG/PNG only)</div>
+                <div id="previewMultiB" class="image-preview"><div class="empty-state">no file</div></div>
+                <input type="file" id="fileMultiB" class="file-upload" accept="image/jpeg,image/png,image/jpg" data-panel="multi" data-side="b">
+            </div>
+        </div>
+        <div class="insight-area">
+            <div class="metrics-flex">
+                <div class="metric-tile"><div class="label">SSIM (MULTI‑THREAD)</div><div class="value" id="multiSsimVal">—</div></div>
+                <div class="metric-tile"><div class="label">PARALLEL BOOST</div><div class="value" id="multiBoost">∼ 0x</div></div>
+                <div class="metric-tile"><div class="label">TIME (ms)</div><div class="value" id="multiTime">—</div></div>
+            </div>
+            <div class="animated-viz">
+                <div class="progress-bar-container"><div class="progress-fill" id="multiProgressFill" style="transition: width 0.5s ease;"></div></div>
+                <div id="multiThreadAnimation" class="thread-visualizer" style="gap:0.8rem;"><div class="thread-chip">⚡ thread 1</div><div class="thread-chip">⚡ thread 2</div><div class="thread-chip">⚡ thread 3</div><div class="thread-chip">⚡ thread 4</div></div>
+                <div class="status-chip" id="multiStatusMsg">🔀 chunk‑based parallelism simulation</div>
+            </div>
+            <button class="action-btn" data-mode="multi">🚀 EXECUTE MULTI‑THREAD SSIM</button>
+        </div>
+    </div>
+
+    <!-- Panel Hybrid - TEXT FILES ONLY -->
+    <div id="panelHybrid" class="algorithm-panel">
+        <div class="image-comparison-grid">
+            <div class="vision-card">
+                <div class="card-title">📄 FILE A (Text files only)</div>
+                <div id="previewHybridA" class="image-preview"><div class="empty-state">Select a text file</div></div>
+                <input type="file" id="fileHybridA" class="file-upload" accept=".txt,.md,.json,.xml,.csv,.log" data-panel="hybrid" data-side="a">
+            </div>
+            <div class="vision-card">
+                <div class="card-title">📄 FILE B (Text files only)</div>
+                <div id="previewHybridB" class="image-preview"><div class="empty-state">Select a text file</div></div>
+                <input type="file" id="fileHybridB" class="file-upload" accept=".txt,.md,.json,.xml,.csv,.log" data-panel="hybrid" data-side="b">
+            </div>
+        </div>
+        <div class="insight-area">
+            <div class="metrics-flex">
+                <div class="metric-tile"><div class="label">COSINE SCORE</div><div class="value" id="hybridSsim">—</div></div>
+                <div class="metric-tile"><div class="label">SIMILARITY %</div><div class="value" id="phashScore">—</div></div>
+                <div class="metric-tile"><div class="label">DOCUMENT TYPE</div><div class="value" id="histogramDiff">—</div></div>
+                <div class="metric-tile"><div class="label">TIME (ms)</div><div class="value" id="hybridTime">—</div></div>
+            </div>
+            <div class="animated-viz">
+                <div class="progress-bar-container"><div class="progress-fill" id="hybridFillBar" style="transition: width 0.5s ease;"></div></div>
+                <div class="thread-visualizer"><div class="thread-chip">📄 Word Frequency Analysis</div><div class="thread-chip">📊 Cosine Similarity</div></div>
+                <div class="status-chip" id="hybridStatusMsg">📑 compares textual content between files</div>
+            </div>
+            <button class="action-btn" data-mode="hybrid">📄 COMPARE DOCUMENTS</button>
+        </div>
+    </div>
+
+    <!-- Panel Edge - GIF ONLY -->
+    <div id="panelEdge" class="algorithm-panel">
+        <div class="image-comparison-grid">
+            <div class="vision-card">
+                <div class="card-title">🎞️ GIF A (Sequential - GIF only)</div>
+                <div id="previewEdgeA" class="image-preview"><div class="empty-state">SELECT GIF</div></div>
+                <input type="file" id="fileEdgeA" class="file-upload" accept=".gif" data-panel="edge" data-side="a">
+            </div>
+            <div class="vision-card">
+                <div class="card-title">🎞️ GIF B (Sequential - GIF only)</div>
+                <div id="previewEdgeB" class="image-preview"><div class="empty-state">SELECT GIF</div></div>
+                <input type="file" id="fileEdgeB" class="file-upload" accept=".gif" data-panel="edge" data-side="b">
+            </div>
+        </div>
+        <div class="insight-area">
+            <div class="metrics-flex">
+                <div class="metric-tile"><div class="label">GIF SIMILARITY</div><div class="value" id="edgeSimValue">—</div></div>
+                <div class="metric-tile"><div class="label">MATCH %</div><div class="value" id="gradientCoherence">—</div></div>
+                <div class="metric-tile"><div class="label">TIME (ms)</div><div class="value" id="edgeTime">—</div></div>
+            </div>
+            <div class="animated-viz">
+                <div class="progress-bar-container"><div class="progress-fill" id="edgeProgressFill" style="transition: width 0.5s ease;"></div></div>
+                <div class="thread-visualizer"><div class="thread-chip">🎞 Frame-by-Frame Analysis</div><div class="thread-chip">🧵 Sequential Processing</div></div>
+                <div class="status-chip" id="edgeStatusMsg">🎞 compares GIF frames one by one using a single thread</div>
+            </div>
+            <button class="action-btn" data-mode="edge">🎞 COMPARE GIFS (SEQUENTIAL)</button>
+        </div>
+    </div>
+
+    <!-- Panel GIF Parallel - GIF ONLY -->
+    <div id="panelGifParallel" class="algorithm-panel">
+        <div class="image-comparison-grid">
+            <div class="vision-card">
+                <div class="card-title">⚡ GIF A (Parallel - GIF only)</div>
+                <div id="previewGifParallelA" class="image-preview"><div class="empty-state">select GIF</div></div>
+                <input type="file" id="fileGifParallelA" class="file-upload" accept=".gif" data-panel="gifParallel" data-side="a">
+            </div>
+            <div class="vision-card">
+                <div class="card-title">⚡ GIF B (Parallel - GIF only)</div>
+                <div id="previewGifParallelB" class="image-preview"><div class="empty-state">select GIF</div></div>
+                <input type="file" id="fileGifParallelB" class="file-upload" accept=".gif" data-panel="gifParallel" data-side="b">
+            </div>
+        </div>
+        <div class="insight-area">
+            <div class="metrics-flex">
+                <div class="metric-tile"><div class="label">GIF SIMILARITY</div><div class="value" id="gifParallelSim">—</div></div>
+                <div class="metric-tile"><div class="label">PARALLEL BOOST</div><div class="value" id="gifParallelBoost">∼ 0x</div></div>
+                <div class="metric-tile"><div class="label">TIME (ms)</div><div class="value" id="gifParallelTime">—</div></div>
+            </div>
+            <div class="animated-viz">
+                <div class="progress-bar-container"><div class="progress-fill" id="gifParallelFill" style="transition: width 0.5s ease;"></div></div>
+                <div class="thread-visualizer"><div class="thread-chip">⚡ thread 1</div><div class="thread-chip">⚡ thread 2</div><div class="thread-chip">⚡ thread 3</div><div class="thread-chip">⚡ thread 4</div></div>
+                <div class="status-chip" id="gifParallelStatus">⚡ parallel frame processing engine</div>
+            </div>
+            <button class="action-btn" data-mode="gifParallel">🚀 RUN GIF PARALLEL</button>
+        </div>
+    </div>
+    <footer>Ahmed Salman | Adil Munir | Muhammad Talha</footer>
+</div>
+
+<!-- ==================== MANUAL SHARE COLLABORATION (ALL PANELS CORRECT) ==================== -->
+<script>
+(function() {
+    console.log('🎯 Initializing Manual Share Collaboration for ALL panels...');
+    
+    let myRoomId = null;
+    let mySessionId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+    let pollingInterval = null;
+    
+    // Store partner data with timestamps
+    let partnerData = {
+        serial: { left: null, right: null, leftTimestamp: null, rightTimestamp: null, type: 'image' },
+        multi: { left: null, right: null, leftTimestamp: null, rightTimestamp: null, type: 'image' },
+        hybrid: { left: null, right: null, leftTimestamp: null, rightTimestamp: null, leftText: null, rightText: null, type: 'text' },
+        edge: { left: null, right: null, leftTimestamp: null, rightTimestamp: null, type: 'gif' },
+        gifParallel: { left: null, right: null, leftTimestamp: null, rightTimestamp: null, type: 'gif' }
+    };
+    
+    function getCurrentPanel() {
+        const active = document.querySelector('.algorithm-panel.active-panel');
+        if (!active) return 'serial';
+        if (active.id === 'panelSerial') return 'serial';
+        if (active.id === 'panelMulti') return 'multi';
+        if (active.id === 'panelHybrid') return 'hybrid';
+        if (active.id === 'panelEdge') return 'edge';
+        if (active.id === 'panelGifParallel') return 'gifParallel';
+        return 'serial';
+    }
+    
+    function showToast(msg, type = 'info') {
+        const toast = document.getElementById('collabToast');
+        if (toast) {
+            toast.innerHTML = msg;
+            toast.style.opacity = '1';
+            const color = type === 'success' ? '#4ade80' : type === 'error' ? '#f87171' : '#a78bfa';
+            toast.style.borderLeftColor = color;
+            toast.style.color = color;
+            setTimeout(() => toast.style.opacity = '0', 3000);
+        }
+    }
+    
+    function updatePartnerStatus(connected, roomId = null) {
+        const dot = document.getElementById('partnerStatusDot');
+        const text = document.getElementById('partnerStatusText');
+        if (connected) {
+            dot.style.backgroundColor = '#4ade80';
+            text.innerHTML = 'Partner Connected';
+            text.style.color = '#4ade80';
+        } else if (roomId) {
+            dot.style.backgroundColor = '#facc15';
+            text.innerHTML = `Room: ${roomId} (Click to copy)`;
+            text.style.color = '#a78bfa';
+            text.style.cursor = 'pointer';
+            text.onclick = () => { navigator.clipboard.writeText(roomId); showToast(`📋 Copied: ${roomId}`, 'success'); };
+        } else {
+            dot.style.backgroundColor = '#f87171';
+            text.innerHTML = 'Waiting for Partner...';
+            text.style.color = '#facc15';
+        }
+    }
+    
+    async function createRoom() {
+        try {
+            const res = await fetch('/collab/create', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+            const data = await res.json();
+            myRoomId = data.roomId;
+            updatePartnerStatus(false, myRoomId);
+            startPolling();
+            showToast(`✅ Room created: ${myRoomId}`, 'success');
+        } catch (e) { showToast('Failed to create room', 'error'); }
+    }
+    
+    async function joinRoom() {
+        const roomId = prompt('Enter Room ID:');
+        if (!roomId) return;
+        myRoomId = roomId.trim();
+        try {
+            const res = await fetch('/collab/join', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ roomId: myRoomId, sessionId: mySessionId })
+            });
+            const data = await res.json();
+            updatePartnerStatus(data.status === 'paired', data.status === 'paired' ? null : myRoomId);
+            startPolling();
+            showToast(data.status === 'paired' ? '✅ Partner connected!' : '⏳ Waiting for partner...', 'info');
+        } catch (e) { showToast('Failed to join', 'error'); }
+    }
+    
+    async function updateFileInput(inputId, imageData, filename) {
+        const fileInput = document.getElementById(inputId);
+        if (!fileInput) return false;
+        
+        try {
+            const res = await fetch(imageData);
+            const blob = await res.blob();
+            const file = new File([blob], filename, { type: blob.type || 'image/png' });
+            
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            fileInput.files = dataTransfer.files;
+            
+            const changeEvent = new Event('change', { bubbles: true });
+            fileInput.dispatchEvent(changeEvent);
+            
+            console.log(`✅ Updated file input ${inputId} with ${filename}`);
+            return true;
+        } catch (e) {
+            console.error('Failed to update file input:', e);
+            return false;
+        }
+    }
+    
+    async function shareImage(side) {
+        if (!myRoomId) { showToast('Create or join a room first!', 'error'); return; }
+        
+        const panel = getCurrentPanel();
+        let fileInput = null;
+        
+        if (panel === 'serial') fileInput = document.getElementById(side === 'left' ? 'fileSerialA' : 'fileSerialB');
+        else if (panel === 'multi') fileInput = document.getElementById(side === 'left' ? 'fileMultiA' : 'fileMultiB');
+        else if (panel === 'hybrid') fileInput = document.getElementById(side === 'left' ? 'fileHybridA' : 'fileHybridB');
+        else if (panel === 'edge') fileInput = document.getElementById(side === 'left' ? 'fileEdgeA' : 'fileEdgeB');
+        else fileInput = document.getElementById(side === 'left' ? 'fileGifParallelA' : 'fileGifParallelB');
+        
+        if (!fileInput?.files?.[0]) { showToast(`No file on ${side} side. Please upload first.`, 'error'); return; }
+        
+        const file = fileInput.files[0];
+        
+        // Validate file type based on panel
+        const fileType = panel === 'hybrid' ? 'text' : (panel === 'edge' || panel === 'gifParallel' ? 'gif' : 'image');
+        const fileExt = file.name.split('.').pop().toLowerCase();
+        
+        if (fileType === 'image' && !['jpg', 'jpeg', 'png'].includes(fileExt)) {
+            showToast('❌ Please upload JPG or PNG image files only!', 'error');
+            return;
+        }
+        if (fileType === 'text' && !['txt', 'md', 'json', 'xml', 'csv', 'log'].includes(fileExt)) {
+            showToast('❌ Please upload text files only! (.txt, .md, .json, .xml, .csv, .log)', 'error');
+            return;
+        }
+        if (fileType === 'gif' && fileExt !== 'gif') {
+            showToast('❌ Please upload GIF files only!', 'error');
+            return;
+        }
+        
+        showToast(`📤 Sharing ${side}: ${file.name}...`, 'info');
+        
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            try {
+                let shareData = { 
+                    roomId: myRoomId, 
+                    side: side, 
+                    imageData: e.target.result, 
+                    panel: panel, 
+                    filename: file.name,
+                    fileType: fileType
+                };
+                
+                if (fileType === 'text') {
+                    shareData.textContent = e.target.result;
+                }
+                
+                await fetch('/collab/share', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(shareData)
+                });
+                showToast(`✅ Shared ${side}: ${file.name}`, 'success');
+            } catch (err) { console.error('Share error:', err); showToast('Failed to share', 'error'); }
+        };
+        
+        if (fileType === 'text') {
+            reader.readAsText(file);
+        } else {
+            reader.readAsDataURL(file);
+        }
+    }
+    
+    function startPolling() {
+    if (pollingInterval) clearInterval(pollingInterval);
+    pollingInterval = setInterval(async () => {
+        if (!myRoomId) return;
+        try {
+            const res = await fetch('/collab/get/' + myRoomId + '?t=' + Date.now());
+            const data = await res.json();
+            if (data.hasPartner) updatePartnerStatus(true);
+            
+            if (data.images) {
+                // Check which panel the image belongs to
+                const leftPanel = data.images.left_panel || 'serial';
+                const rightPanel = data.images.right_panel || 'serial';
+                
+                // Update LEFT image only for its specific panel
+                if (data.images.left_image) {
+                    const newTimestamp = data.images.left_timestamp;
+                    const oldTimestamp = partnerData[leftPanel].leftTimestamp;
+                    
+                    if (newTimestamp !== oldTimestamp) {
+                        partnerData[leftPanel].left = data.images.left_image;
+                        partnerData[leftPanel].leftTimestamp = newTimestamp;
+                        
+                        if (data.images.left_text) {
+                            partnerData[leftPanel].leftText = data.images.left_text;
+                        }
+                        
+                        let previewId = '', inputId = '';
+                        if (leftPanel === 'serial') { previewId = 'previewSerialA'; inputId = 'fileSerialA'; }
+                        else if (leftPanel === 'multi') { previewId = 'previewMultiA'; inputId = 'fileMultiA'; }
+                        else if (leftPanel === 'hybrid') { previewId = 'previewHybridA'; inputId = 'fileHybridA'; }
+                        else if (leftPanel === 'edge') { previewId = 'previewEdgeA'; inputId = 'fileEdgeA'; }
+                        else { previewId = 'previewGifParallelA'; inputId = 'fileGifParallelA'; }
+                        
+                        const preview = document.getElementById(previewId);
+                        if (preview) {
+                            if (leftPanel === 'hybrid' && data.images.left_text) {
+                                const previewText = data.images.left_text.substring(0, 200);
+                                preview.innerHTML = `<div style="padding:15px; background:rgba(167,139,250,0.1); border-radius:8px; border:2px solid #a78bfa;">
+                                    <div>📄 Text Document from Partner</div>
+                                    <div style="font-size:11px; margin-top:8px; opacity:0.7;">${previewText}${previewText.length >= 200 ? '...' : ''}</div>
+                                </div>`;
+                            } else {
+                                preview.innerHTML = `<img src="${data.images.left_image}" style="max-height:220px; border-radius: 8px; border: 2px solid #a78bfa;">
+                                                    <div style="font-size:10px; text-align:center; margin-top:5px; color:#a78bfa;">📸 From Partner</div>`;
+                            }
+                            
+                            await updateFileInput(inputId, data.images.left_image, 'partner-left');
+                            showToast(`📸 Partner shared ${leftPanel} LEFT image`, 'info');
+                        }
+                    }
+                }
+                
+                // Update RIGHT image only for its specific panel
+                if (data.images.right_image) {
+                    const newTimestamp = data.images.right_timestamp;
+                    const oldTimestamp = partnerData[rightPanel].rightTimestamp;
+                    
+                    if (newTimestamp !== oldTimestamp) {
+                        partnerData[rightPanel].right = data.images.right_image;
+                        partnerData[rightPanel].rightTimestamp = newTimestamp;
+                        
+                        if (data.images.right_text) {
+                            partnerData[rightPanel].rightText = data.images.right_text;
+                        }
+                        
+                        let previewId = '', inputId = '';
+                        if (rightPanel === 'serial') { previewId = 'previewSerialB'; inputId = 'fileSerialB'; }
+                        else if (rightPanel === 'multi') { previewId = 'previewMultiB'; inputId = 'fileMultiB'; }
+                        else if (rightPanel === 'hybrid') { previewId = 'previewHybridB'; inputId = 'fileHybridB'; }
+                        else if (rightPanel === 'edge') { previewId = 'previewEdgeB'; inputId = 'fileEdgeB'; }
+                        else { previewId = 'previewGifParallelB'; inputId = 'fileGifParallelB'; }
+                        
+                        const preview = document.getElementById(previewId);
+                        if (preview) {
+                            if (rightPanel === 'hybrid' && data.images.right_text) {
+                                const previewText = data.images.right_text.substring(0, 200);
+                                preview.innerHTML = `<div style="padding:15px; background:rgba(236,72,153,0.1); border-radius:8px; border:2px solid #ec4899;">
+                                    <div>📄 Text Document from Partner</div>
+                                    <div style="font-size:11px; margin-top:8px; opacity:0.7;">${previewText}${previewText.length >= 200 ? '...' : ''}</div>
+                                </div>`;
+                            } else {
+                                preview.innerHTML = `<img src="${data.images.right_image}" style="max-height:220px; border-radius: 8px; border: 2px solid #ec4899;">
+                                                    <div style="font-size:10px; text-align:center; margin-top:5px; color:#ec4899;">📸 From Partner</div>`;
+                            }
+                            
+                            await updateFileInput(inputId, data.images.right_image, 'partner-right');
+                            showToast(`📸 Partner shared ${rightPanel} RIGHT image`, 'info');
+                        }
+                    }
+                }
+            }
+        } catch (e) { console.error('Polling error:', e); }
+    }, 1000);
+}
+    
+    async function base64ToFile(b64, name) {
+        if (!b64) return null;
+        const res = await fetch(b64);
+        const blob = await res.blob();
+        return new File([blob], name, { type: 'image/png' });
+    }
+    
+    async function runComparison() {
+    if (!myRoomId) { showToast('Create or join a room first!', 'error'); return; }
+    
+    const panel = getCurrentPanel();
+    
+    let statusMsg = null, progressFill = null, ssimElement = null, percentElement = null, timeElement = null;
+    let endpoint = '/compare/serial';
+    let isGif = false;
+    let isText = false;
+    
+    if (panel === 'serial') {
+        statusMsg = document.getElementById('serialStatusMsg');
+        progressFill = document.getElementById('serialProgressFill');
+        ssimElement = document.getElementById('serialSsimVal');
+        percentElement = document.getElementById('serialPercent');
+        timeElement = document.getElementById('serialTime');
+        endpoint = '/compare/serial';
+    } else if (panel === 'multi') {
+        statusMsg = document.getElementById('multiStatusMsg');
+        progressFill = document.getElementById('multiProgressFill');
+        ssimElement = document.getElementById('multiSsimVal');
+        timeElement = document.getElementById('multiTime');
+        endpoint = '/compare/multi';
+    } else if (panel === 'hybrid') {
+        statusMsg = document.getElementById('hybridStatusMsg');
+        progressFill = document.getElementById('hybridFillBar');
+        ssimElement = document.getElementById('hybridSsim');
+        percentElement = document.getElementById('phashScore');
+        timeElement = document.getElementById('hybridTime');
+        endpoint = '/compare/hybrid';
+        isText = true;
+    } else if (panel === 'edge') {
+        statusMsg = document.getElementById('edgeStatusMsg');
+        progressFill = document.getElementById('edgeProgressFill');
+        ssimElement = document.getElementById('edgeSimValue');
+        percentElement = document.getElementById('gradientCoherence');
+        timeElement = document.getElementById('edgeTime');
+        endpoint = '/compare/edge';
+        isGif = true;
+    } else if (panel === 'gifParallel') {
+        statusMsg = document.getElementById('gifParallelStatus');
+        progressFill = document.getElementById('gifParallelFill');
+        ssimElement = document.getElementById('gifParallelSim');
+        timeElement = document.getElementById('gifParallelTime');
+        endpoint = '/compare/edge-parallel';
+        isGif = true;
+    }
+    
+    if (statusMsg) { 
+        statusMsg.innerHTML = isText ? '🔄 Analyzing document similarity...' : '🔄 Computing similarity...';
+        statusMsg.style.color = '#facc15'; 
+    }
+    if (progressFill) progressFill.style.width = '0%';
+    
+    // Get local files from file inputs
+    let localLeft = null, localRight = null;
+    if (panel === 'serial') {
+        localLeft = document.getElementById('fileSerialA')?.files?.[0];
+        localRight = document.getElementById('fileSerialB')?.files?.[0];
+    } else if (panel === 'multi') {
+        localLeft = document.getElementById('fileMultiA')?.files?.[0];
+        localRight = document.getElementById('fileMultiB')?.files?.[0];
+    } else if (panel === 'hybrid') {
+        localLeft = document.getElementById('fileHybridA')?.files?.[0];
+        localRight = document.getElementById('fileHybridB')?.files?.[0];
+    } else if (panel === 'edge') {
+        localLeft = document.getElementById('fileEdgeA')?.files?.[0];
+        localRight = document.getElementById('fileEdgeB')?.files?.[0];
+    } else {
+        localLeft = document.getElementById('fileGifParallelA')?.files?.[0];
+        localRight = document.getElementById('fileGifParallelB')?.files?.[0];
+    }
+    
+    console.log(`Comparing ${panel}: Left=${localLeft?.name || 'none'}, Right=${localRight?.name || 'none'}`);
+    
+    if (!localLeft || !localRight) {
+        showToast('❌ Need both files! Please upload or receive from partner.', 'error');
+        if (statusMsg) statusMsg.innerHTML = '✨ Need both left and right files';
+        return;
+    }
+    
+    const startTime = performance.now();
+    
+    try {
+        let result;
+        
+        if (isText) {
+            const text1 = await localLeft.text();
+            const text2 = await localRight.text();
+            
+            // ADD roomId and sessionId to the request
+            const res = await fetch(endpoint + '?roomId=' + myRoomId + '&sessionId=' + mySessionId, {
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text1, text2, roomId: myRoomId, sessionId: mySessionId })
+            });
+            result = await res.json();
+            
+            if (progressFill) {
+                progressFill.style.width = '0%';
+                setTimeout(() => progressFill.style.width = parseFloat(result.percent) + '%', 50);
+            }
+            if (ssimElement) ssimElement.innerHTML = result.cosine;
+            if (percentElement) percentElement.innerHTML = result.percent;
+        } else if (isGif) {
+            const fd = new FormData();
+            fd.append('gif1', localLeft);
+            fd.append('gif2', localRight);
+            fd.append('roomId', myRoomId);      // ADD THIS
+            fd.append('sessionId', mySessionId); // ADD THIS
+            
+            const res = await fetch(endpoint, { method: 'POST', body: fd });
+            result = await res.json();
+            const percent = parseFloat(result.percent);
+            if (progressFill) {
+                progressFill.style.width = '0%';
+                setTimeout(() => progressFill.style.width = percent + '%', 50);
+            }
+            if (ssimElement) ssimElement.innerHTML = result.gifSimilarity;
+            if (percentElement) percentElement.innerHTML = result.percent;
+        } else {
+            const fd = new FormData();
+            fd.append('image1', localLeft);
+            fd.append('image2', localRight);
+            fd.append('roomId', myRoomId);      // ADD THIS
+            fd.append('sessionId', mySessionId); // ADD THIS
+            
+            const res = await fetch(endpoint, { method: 'POST', body: fd });
+            result = await res.json();
+            const percent = parseFloat(result.percent);
+            if (progressFill) {
+                progressFill.style.width = '0%';
+                setTimeout(() => progressFill.style.width = percent + '%', 50);
+            }
+            if (ssimElement) ssimElement.innerHTML = result.ssim;
+            if (percentElement) percentElement.innerHTML = result.percent;
+        }
+        
+        const endTime = performance.now();
+        if (timeElement) timeElement.innerHTML = (endTime - startTime).toFixed(2) + ' ms';
+        
+        if (statusMsg && !isText) { 
+            statusMsg.innerHTML = `✅ Similarity: ${result.percent}`; 
+            statusMsg.style.color = '#4ade80'; 
+        }
+        showToast(`📊 Similarity: ${result.percent}`, 'success');
+        
+    } catch (e) {
+        console.error('Comparison error:', e);
+        showToast('❌ Comparison failed', 'error');
+        if (statusMsg) statusMsg.innerHTML = '❌ Comparison failed. Try again.';
+    }
+}
+    
+    function setupPreview() {
+        const panels = ['serial', 'multi', 'hybrid', 'edge', 'gifParallel'];
+        for (const panel of panels) {
+            let leftInput = null, rightInput = null, leftPreview = null, rightPreview = null;
+            let isText = (panel === 'hybrid');
+            let isGif = (panel === 'edge' || panel === 'gifParallel');
+            
+            if (panel === 'serial') {
+                leftInput = document.getElementById('fileSerialA');
+                rightInput = document.getElementById('fileSerialB');
+                leftPreview = document.getElementById('previewSerialA');
+                rightPreview = document.getElementById('previewSerialB');
+            } else if (panel === 'multi') {
+                leftInput = document.getElementById('fileMultiA');
+                rightInput = document.getElementById('fileMultiB');
+                leftPreview = document.getElementById('previewMultiA');
+                rightPreview = document.getElementById('previewMultiB');
+            } else if (panel === 'hybrid') {
+                leftInput = document.getElementById('fileHybridA');
+                rightInput = document.getElementById('fileHybridB');
+                leftPreview = document.getElementById('previewHybridA');
+                rightPreview = document.getElementById('previewHybridB');
+            } else if (panel === 'edge') {
+                leftInput = document.getElementById('fileEdgeA');
+                rightInput = document.getElementById('fileEdgeB');
+                leftPreview = document.getElementById('previewEdgeA');
+                rightPreview = document.getElementById('previewEdgeB');
+            } else {
+                leftInput = document.getElementById('fileGifParallelA');
+                rightInput = document.getElementById('fileGifParallelB');
+                leftPreview = document.getElementById('previewGifParallelA');
+                rightPreview = document.getElementById('previewGifParallelB');
+            }
+            
+            if (leftInput && leftPreview) {
+                leftInput.addEventListener('change', function() {
+                    if (this.files?.[0]) {
+                        const file = this.files[0];
+                        if (isText) {
+                            const reader = new FileReader();
+                            reader.onload = e => {
+                                const previewText = e.target.result.substring(0, 200);
+                                leftPreview.innerHTML = `<div style="padding:15px; background:rgba(167,139,250,0.1); border-radius:8px;">
+                                    <div>📄 ${file.name}</div>
+                                    <div style="font-size:11px; margin-top:8px; opacity:0.7;">${previewText}${previewText.length >= 200 ? '...' : ''}</div>
+                                </div>`;
+                            };
+                            reader.readAsText(file);
+                        } else if (isGif) {
+                            const reader = new FileReader();
+                            reader.onload = e => { leftPreview.innerHTML = `<img src="${e.target.result}" style="max-height:220px; border-radius: 8px;">`; };
+                            reader.readAsDataURL(file);
+                        } else {
+                            const reader = new FileReader();
+                            reader.onload = e => { leftPreview.innerHTML = `<img src="${e.target.result}" style="max-height:220px; border-radius: 8px;">`; };
+                            reader.readAsDataURL(file);
+                        }
+                        showToast(`📁 ${panel.toUpperCase()} LEFT: ${file.name} loaded. Click Share to send.`, 'info');
+                    }
+                });
+            }
+            
+            if (rightInput && rightPreview) {
+                rightInput.addEventListener('change', function() {
+                    if (this.files?.[0]) {
+                        const file = this.files[0];
+                        if (isText) {
+                            const reader = new FileReader();
+                            reader.onload = e => {
+                                const previewText = e.target.result.substring(0, 200);
+                                rightPreview.innerHTML = `<div style="padding:15px; background:rgba(236,72,153,0.1); border-radius:8px;">
+                                    <div>📄 ${file.name}</div>
+                                    <div style="font-size:11px; margin-top:8px; opacity:0.7;">${previewText}${previewText.length >= 200 ? '...' : ''}</div>
+                                </div>`;
+                            };
+                            reader.readAsText(file);
+                        } else if (isGif) {
+                            const reader = new FileReader();
+                            reader.onload = e => { rightPreview.innerHTML = `<img src="${e.target.result}" style="max-height:220px; border-radius: 8px;">`; };
+                            reader.readAsDataURL(file);
+                        } else {
+                            const reader = new FileReader();
+                            reader.onload = e => { rightPreview.innerHTML = `<img src="${e.target.result}" style="max-height:220px; border-radius: 8px;">`; };
+                            reader.readAsDataURL(file);
+                        }
+                        showToast(`📁 ${panel.toUpperCase()} RIGHT: ${file.name} loaded. Click Share to send.`, 'info');
+                    }
+                });
+            }
+        }
+    }
+    
+    function init() {
+        const container = document.querySelector('#partnerStatusText')?.parentNode;
+        if (container) {
+            ['collabCreateBtn', 'collabJoinBtn'].forEach(id => document.getElementById(id)?.remove());
+            const createBtn = document.createElement('button');
+            createBtn.id = 'collabCreateBtn';
+            createBtn.textContent = '🏠 Create';
+            createBtn.style.cssText = 'background: #a78bfa; border: none; padding: 4px 10px; border-radius: 20px; color: white; cursor: pointer; font-size: 10px; margin-left: 8px;';
+            createBtn.onclick = createRoom;
+            container.appendChild(createBtn);
+            const joinBtn = document.createElement('button');
+            joinBtn.id = 'collabJoinBtn';
+            joinBtn.textContent = '🔗 Join';
+            joinBtn.style.cssText = 'background: #ec4899; border: none; padding: 4px 10px; border-radius: 20px; color: white; cursor: pointer; font-size: 10px; margin-left: 5px;';
+            joinBtn.onclick = joinRoom;
+            container.appendChild(joinBtn);
+        }
+        
+        const shareBtn = document.getElementById('collabShareBtn');
+        if (shareBtn) {
+            const ns = shareBtn.cloneNode(true);
+            shareBtn.parentNode.replaceChild(ns, shareBtn);
+            ns.onclick = () => shareImage(confirm('Share LEFT file? OK=Left, Cancel=Right') ? 'left' : 'right');
+        }
+        
+        const compareBtn = document.getElementById('collabCompareBtn');
+        if (compareBtn) {
+            const nc = compareBtn.cloneNode(true);
+            compareBtn.parentNode.replaceChild(nc, compareBtn);
+            nc.onclick = runComparison;
+        }
+        
+        const panelButtons = ['serial', 'multi', 'hybrid', 'edge', 'gifParallel'];
+        for (const panel of panelButtons) {
+            const btn = document.querySelector(`#panel${panel.charAt(0).toUpperCase() + panel.slice(1)} .action-btn`);
+            if (btn) {
+                const nb = btn.cloneNode(true);
+                btn.parentNode.replaceChild(nb, btn);
+                nb.onclick = runComparison;
+            }
+        }
+        
+        setupPreview();
+        console.log('✅ Manual share collaboration ready for ALL panels!');
+        showToast('Ready! Create a room, join, upload files, then click Share.', 'success');
+    }
+    
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+    else init();
+})();
+</script>
+
+<script src="app.js"></script>
+</body>
+</html>
